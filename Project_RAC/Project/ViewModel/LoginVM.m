@@ -16,19 +16,17 @@
 @implementation LoginVM
 
 - (RACCommand *)loginCommand{
-    
     if (_loginCommand == nil) {
-        @weakify(self);
-        _loginCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(id input) {
-            @strongify(self);
-            
-            return [self loginAPIWithUsername:self.username password:self.password];
+        _loginCommand = [[RACCommand alloc] initWithEnabled:self.loginSignal signalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
+            return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+                [subscriber sendNext:@"网络请求回来的数据"];
+                [subscriber sendCompleted];
+                return nil;
+            }];
         }];
-        
     }
     return _loginCommand;
 }
-
 
 - (instancetype)init {
     if (self = [super init]) {
@@ -52,12 +50,6 @@
     self.loginSignal = [RACSignal combineLatest:@[self.validUsernameSignal, self.validPasswordSignal]
                                          reduce:^id(NSNumber *usernameValid, NSNumber *passwordValid) {
         return @([usernameValid boolValue] && [passwordValid boolValue]);
-    }];
-}
-
-- (RACSignal *)loginAPIWithUsername:(NSString *)username password:(NSString *)pwd {
-    return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
-        return nil;
     }];
 }
 
