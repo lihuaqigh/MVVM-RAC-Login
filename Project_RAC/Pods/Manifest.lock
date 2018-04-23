@@ -1,0 +1,30 @@
+PODS:
+  - IGListKit (3.2.0):
+    - IGListKit/Default (= 3.2.0)
+  - IGListKit/Default (3.2.0):
+    - IGListKit/Diffing
+  - IGListKit/Diffing (3.2.0)
+  - Masonry (1.1.0)
+  - ReactiveObjC (3.1.0)
+  - SDWebImage (4.3.3):
+    - SDWebImage/Core (= 4.3.3)
+  - SDWebImage/Core (4.3.3)
+  - YYModel (1.0.4)
+
+DEPENDENCIES:
+  - IGListKit (~> 3.0)
+  - Masonry
+  - ReactiveObjC
+  - SDWebImage (~> 4.0)
+  - YYModel
+
+SPEC CHECKSUMS:
+  IGListKit: ffe6f98a728ab0250aceea22e7957aa5477c5048
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  ReactiveObjC: 2a38ea15335de4119d8b17caf1db1484f61db902
+  SDWebImage: de4d90b5bff3571eae7bd16202b1f43135409fa5
+  YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30
+
+PODFILE CHECKSUM: 50aea9eb331642585a8caa222645d4f032f386aa
+
+COCOAPODS: 1.4.0
