@@ -15,17 +15,43 @@
 
 @implementation LoginVM
 
+// 网络请求（登录按钮被点击）
 - (RACCommand *)loginCommand{
     if (_loginCommand == nil) {
-        _loginCommand = [[RACCommand alloc] initWithEnabled:self.loginSignal signalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
+        _loginCommand = [[RACCommand alloc] initWithEnabled:self.validLoginSignal signalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
             return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
-                [subscriber sendNext:@"网络请求回来的数据"];
-                [subscriber sendCompleted];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [subscriber sendNext:@"网络请求回来的数据"];
+                    [subscriber sendCompleted];
+                });
                 return nil;
             }];
         }];
+        
+//        _loginCommand = [[RACCommand alloc] initWithSignalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
+//            return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+//                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//                    [subscriber sendNext:@"网络请求回来的数据"];
+//                    [subscriber sendCompleted];
+//                });
+//                return nil;
+//            }];
+//        }];
     }
     return _loginCommand;
+}
+
+- (RACSignal *)loginSignal {
+    if (_loginSignal == nil) {
+        _loginSignal = [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [subscriber sendNext:@"网络请求回来的数据二"];
+                [subscriber sendCompleted];
+            });
+            return nil;
+        }];
+    }
+    return _loginSignal;
 }
 
 - (instancetype)init {
@@ -47,7 +73,7 @@
         return @([self isValidPassword:value]);
     }];
     
-    self.loginSignal = [RACSignal combineLatest:@[self.validUsernameSignal, self.validPasswordSignal]
+    self.validLoginSignal = [RACSignal combineLatest:@[self.validUsernameSignal, self.validPasswordSignal]
                                          reduce:^id(NSNumber *usernameValid, NSNumber *passwordValid) {
         return @([usernameValid boolValue] && [passwordValid boolValue]);
     }];

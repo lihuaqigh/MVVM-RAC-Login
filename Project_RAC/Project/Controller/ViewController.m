@@ -73,23 +73,43 @@
 - (void)bindModel {
     RAC(self.loginVM, username)             = self.usernameTextField.rac_textSignal;
     RAC(self.loginVM, password)             = self.passwordTextField.rac_textSignal;
-    RAC(self.loginButton, backgroundColor) = [self.loginVM.loginSignal map:^id(NSNumber *valid){
+    RAC(self.loginButton, backgroundColor) = [self.loginVM.validLoginSignal map:^id(NSNumber *valid){
         return[valid boolValue] ? [UIColor orangeColor]:[UIColor lightGrayColor];
     }];
-
-    self.loginButton.rac_command = self.loginVM.loginCommand;
     
-    [self.loginButton.rac_command.executing subscribeNext:^(id x) {
-        if ([x boolValue]) {
-            NSLog(@"login..");
-        } else {
-            NSLog(@"end logining");
-        }
+    //方式一：用RACSingle，需要手动管理 按钮的交互属性和重复点击事件
+    //    [[self.loginButton rac_signalForControlEvents:UIControlEventTouchUpInside] subscribeNext:^(__kindof UIControl * _Nullable x) {
+    //        [self.loginVM.loginSignal subscribeNext:^(id  _Nullable x) {
+    //            NSLog(@"登录按钮点击：%@",x);
+    //        }];
+    //    }];
+    
+    //方式二：用RACCommand
+    [[self.loginButton rac_signalForControlEvents:UIControlEventTouchUpInside] subscribeNext:^(__kindof UIControl * _Nullable x) {
+        [self.loginVM.loginCommand execute:nil];
     }];
-
-    [self.loginButton.rac_command.executionSignals.switchToLatest subscribeNext:^(id  _Nullable x) {
+    
+    [self.loginVM.loginCommand.executionSignals.switchToLatest subscribeNext:^(id  _Nullable x) {
         NSLog(@"登录按钮点击：%@",x);
     }];
+    
+
+    //方式三： 按钮自带rac_command 更为方便，点击事件都不用自己写了
+//    self.loginButton.rac_command = self.loginVM.loginCommand;
+//
+//    [self.loginButton.rac_command.executing subscribeNext:^(id x) {
+//        if ([x boolValue]) {
+//            NSLog(@"login..");
+//        } else {
+//            NSLog(@"end logining");
+//        }
+//    }];
+//
+//    [self.loginButton.rac_command.executionSignals.switchToLatest subscribeNext:^(id  _Nullable x) {
+//        NSLog(@"登录按钮点击：%@",x);
+//    }];
+    
+    
 }
 
 
